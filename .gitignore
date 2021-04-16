@@ -1,0 +1,6 @@
+docker/*
+download/*
+kernel/*
+output/*
+rootfs_*/*
+tools/*

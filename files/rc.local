@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+if [ "$(grep /var/lib/docker /proc/mounts | grep rootfs)" ]
+then
+  export DOCKER_RAMDISK=true
+fi
+
+udhcpc
+
+exit 0
+
