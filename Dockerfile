@@ -4,7 +4,7 @@ ARG	buildroot=2021.02.1
 RUN	apt-get update \
 	&& apt-get install -y bc build-essential curl cpio dialog \
 	gcc-10 git ncurses-base ncurses-bin libncurses5-dev libelf-dev \
-	libssl-dev python python3 rsync unzip wget
+	libssl-dev python python3 rsync unzip wget zstd
 
 RUN	curl -L -o /tmp/buildroot.tar.gz https://buildroot.org/downloads/buildroot-${buildroot}.tar.gz \
 	&& tar -zxf /tmp/buildroot.tar.gz -C / \
