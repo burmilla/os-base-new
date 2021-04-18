@@ -1,0 +1,38 @@
+#!/bin/sh -e
+# used for initramfs
+export PATH
+
+mount /run
+mkdir -p /run/lock
+mount /proc
+mount /sys
+
+if [ -w /sys/kernel/uevent_helper ]; then
+    echo > /sys/kernel/uevent_helper
+fi
+
+if ! grep -E -q "^[^[:space:]]+ /dev devtmpfs" /proc/mounts; then
+    mount -n -o mode=0755 -t devtmpfs devtmpfs /dev
+fi
+
+udevadm trigger --action=add
+
+mkdir -p /dev/pts
+mount -t devpts -o noexec,nosuid,gid=5,mode=0620 devpts /dev/pts
+
+udevadm settle || true
+
+init='/sbin/init'
+for i in $(cat /proc/cmdline); do
+	case $i in
+		init=/init|init=init)
+			# Avoid endless loop
+			: ;;
+		init=*)
+			init=${i#init=} ;;
+		noshell)
+			sed -i '/^tty[23]/s/^/#/' /etc/inittab ;;
+	esac
+done
+exec $init
+
