@@ -1,0 +1,6 @@
+#!/bin/sh -e
+
+udhcpc
+
+exit 0
+

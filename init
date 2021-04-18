@@ -6,6 +6,7 @@ mount /run
 mkdir -p /run/lock
 mount /proc
 mount /sys
+mount /sys/fs/cgroup
 
 if [ -w /sys/kernel/uevent_helper ]; then
     echo > /sys/kernel/uevent_helper

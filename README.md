@@ -13,11 +13,6 @@ It replaces these components totally:
 * Run scripts scripts on alphabetical order.
 
 Credentials:
-* User: **root**
-* Password: **root**
-
-By default machine does not have any IP address. You can get it by running command:
-```
-udhcpc -i ens3
-```
+* User: **rancher**
+* Password: **rancher**
 

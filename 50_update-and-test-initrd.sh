@@ -4,9 +4,14 @@ mkdir -p output
 rm -rf output/*
 cp kernel/boot/vmlinuz-* output/vmlinuz
 
+echo "generating initrd"
 pushd rootfs/
 find | cpio -H newc -o | gzip -1 > ../output/initrd
 popd
 
-qemu-system-x86_64 -m 1G -kernel output/vmlinuz -initrd output/initrd -nic user,model=virtio-net-pci
+# do not rename eth0
+karg='net.ifnames=0 biosdevname=0'
+
+echo "starting qemu"
+qemu-system-x86_64 -m 2G -kernel output/vmlinuz -initrd output/initrd -nic user,model=virtio-net-pci -vga virtio -append "$karg"
 
