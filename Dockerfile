@@ -1,4 +1,4 @@
-FROM	ubuntu
+FROM	ubuntu:groovy
 ARG	buildroot=2021.02.1
 
 RUN	apt-get update \
