@@ -16,3 +16,8 @@ Credentials:
 * User: **rancher**
 * Password: **rancher**
 
+You can also connect it over SSH with command:
+```
+ssh rancher@localhost -p 2222
+```
+

@@ -13,5 +13,5 @@ popd
 karg='net.ifnames=0 biosdevname=0'
 
 echo "starting qemu"
-qemu-system-x86_64 -m 2G -kernel output/vmlinuz -initrd output/initrd -nic user,model=virtio-net-pci -vga virtio -append "$karg"
+qemu-system-x86_64 -enable-kvm -smp cpus=2 -m 2G -kernel output/vmlinuz -initrd output/initrd -nic user,model=virtio-net-pci,hostfwd=tcp::2222-:22 -vga virtio -append "$karg"
 

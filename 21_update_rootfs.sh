@@ -8,17 +8,19 @@ mkdir -p rootfs
 rm -rf rootfs/*
 tar -Jxf download/rootfs-$arch.tar.xz -C rootfs/
 
-cp fstab rootfs/etc/
-cp init rootfs/
-cp rc.local rootfs/etc/
+cp files/fstab rootfs/etc/
+cp files/init rootfs/
+cp files/rc.local rootfs/etc/
 rm -rf rootfs/run/*
 
 # include needed tools:
 echo 'apt::install-recommends "false";' > rootfs/etc/apt/apt.conf.d/no-install-recommends
-chroot rootfs sh -c 'apt-get update && apt-get install -y bash-completion iptables iputils-ping locales net-tools kmod open-iscsi openssh-server sudo sysvinit-core udev udhcpc'
+chroot rootfs sh -c 'apt-get update && apt-get install -y bash-completion ca-certificates iptables iputils-ping locales net-tools kmod open-iscsi openssh-server sudo sysvinit-core tomoyo-tools udhcpc'
 
-cp iscsid.conf rootfs/etc/iscsi/
-cp sshd_config rootfs/etc/ssh/sshd_config
+# TODO: Figure out if we need udev or not? Or devtmpfs on kernel enough for us?
+
+cp files/iscsid.conf rootfs/etc/iscsi/
+cp files/sshd_config rootfs/etc/ssh/sshd_config
 cat > rootfs/etc/lsb-release << EOF
 DISTRIB_ID=BurmillaOS
 DISTRIB_RELEASE=${VERSION}
@@ -35,8 +37,10 @@ chroot rootfs sh -c 'rm -rf /var/lib/apt/lists/*'
 # use busybox for everything where do not have separate tools
 chroot rootfs /bin/busybox --install -s
 chmod +s rootfs/bin/ping
-chroot rootfs sh -c 'echo > /etc/motd'
-chroot rootfs sh -c 'echo "burmilla" > /etc/hostname'
+echo > rootfs/etc/issue
+echo > rootfs/etc/issue.net
+cp files/motd rootfs/etc/motd
+echo "burmilla" > rootfs/etc/hostname
 
 # add needed users and groups
 chroot rootfs addgroup --gid 1100 rancher

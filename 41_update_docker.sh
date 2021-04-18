@@ -12,3 +12,5 @@ sed -i -e 's/#DOCKERD=/DOCKERD=/' rootfs/etc/default/docker
 mkdir -p rootfs/etc/bash_completion.d
 cp download/docker-bash-completion rootfs/etc/bash_completion.d/docker
 
+chroot rootfs update-rc.d docker defaults
+
