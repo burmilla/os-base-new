@@ -11,11 +11,12 @@ tar -Jxf download/rootfs-$arch.tar.xz -C rootfs/
 cp files/fstab rootfs/etc/
 cp files/init rootfs/
 cp files/rc.local rootfs/etc/
+cp files/sysctl.conf /etc/
 rm -rf rootfs/run/*
 
 # include needed tools:
 echo 'apt::install-recommends "false";' > rootfs/etc/apt/apt.conf.d/no-install-recommends
-chroot rootfs sh -c 'apt-get update && apt-get install -y bash-completion ca-certificates iptables iputils-ping locales net-tools kmod open-iscsi openssh-server sudo sysvinit-core tomoyo-tools udhcpc'
+chroot rootfs sh -c 'apt-get update && apt-get install -y apparmor bash-completion ca-certificates iptables iputils-ping locales net-tools kmod open-iscsi openssh-server sudo sysvinit-core udhcpc'
 
 # TODO: Figure out if we need udev or not? Or devtmpfs on kernel enough for us?
 
