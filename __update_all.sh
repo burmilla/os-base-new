@@ -6,5 +6,6 @@ set -e
 ./21_update_rootfs.sh
 ./40_download_docker.sh
 ./41_update_docker.sh
-./50_update-and-test-initrd.sh
+./50_update.sh
+./51_test.sh
 

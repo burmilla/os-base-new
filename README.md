@@ -8,8 +8,12 @@ It replaces these components totally:
 * [os-system-docker](https://github.com/burmilla/os-system-docker)
 
 
-# How to test:
-* Use Linux desktop with QEMU installed.
+# How to test
+* Use Linux desktop
+* Install needed tools with command:
+```
+sudo apt-get install cpio fakechroot git qemu-system xz-utils
+```
 * Run scripts scripts on alphabetical order.
 
 Credentials:
