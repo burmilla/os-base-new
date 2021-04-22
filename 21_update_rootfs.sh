@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-arch=amd64
-VERSION=prototype
+source 00_settings.sh
 
 mkdir -p rootfs
 rm -rf rootfs/*
@@ -11,12 +10,12 @@ tar -Jxf download/rootfs-$arch.tar.xz -C rootfs/
 cp files/fstab rootfs/etc/
 cp files/init rootfs/
 cp files/rc.local rootfs/etc/
-cp files/sysctl.conf /etc/
+cp files/sysctl.conf rootfs/etc/
 rm -rf rootfs/run/*
 
 # include needed tools:
 echo 'apt::install-recommends "false";' > rootfs/etc/apt/apt.conf.d/no-install-recommends
-chroot rootfs sh -c 'apt-get update && apt-get install -y apparmor bash-completion ca-certificates iptables iputils-ping locales net-tools kmod open-iscsi openssh-server sudo sysvinit-core udhcpc'
+chroot rootfs sh -c 'apt-get update && apt-get install -y apparmor bash-completion ca-certificates iptables iputils-ping locales logrotate net-tools kmod open-iscsi openssh-server sudo syslog-ng-core sysvinit-core udhcpc'
 
 # TODO: Figure out if we need udev or not? Or devtmpfs on kernel enough for us?
 
@@ -24,8 +23,8 @@ cp files/iscsid.conf rootfs/etc/iscsi/
 cp files/sshd_config rootfs/etc/ssh/sshd_config
 cat > rootfs/etc/lsb-release << EOF
 DISTRIB_ID=BurmillaOS
-DISTRIB_RELEASE=${VERSION}
-DISTRIB_DESCRIPTION="BurmillaOS ${VERSION}"
+DISTRIB_RELEASE=${output_version}
+DISTRIB_DESCRIPTION="BurmillaOS ${output_version}"
 EOF
 
 # optimize size
@@ -38,9 +37,9 @@ chroot rootfs sh -c 'rm -rf /var/lib/apt/lists/*'
 # use busybox for everything where do not have separate tools
 chroot rootfs /bin/busybox --install -s
 chmod +s rootfs/bin/ping
-echo > rootfs/etc/issue
+echo > rootfs/etc/motd
 echo > rootfs/etc/issue.net
-cp files/motd rootfs/etc/motd
+cp files/issue rootfs/etc/issue
 echo "burmilla" > rootfs/etc/hostname
 
 # add needed users and groups
