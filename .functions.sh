@@ -112,5 +112,5 @@ package_rootfs() {
     arch=$1
     workdir=$(dirname $(readlink -f $0))
     mkdir -p "$workdir/output"
-    tar -I 'zstd --ultra -22' -cf "$workdir/output/rootfs_amd64.tar.zst" rootfs_$arch
+    tar -I 'zstd --ultra -22' -cf "$workdir/output/rootfs_$arch.tar.zst" "$workdir/rootfs_$arch"
 }
