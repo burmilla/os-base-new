@@ -25,8 +25,7 @@ stop_debuerreotype() {
 create_rootfs() {
     arch=$1
     debian_version=$2
-    debian_snapshot_timestamp=$3
-    epoch="$(TZ=UTC date --date "$debian_snapshot_timestamp" +%s)"
+    epoch=$3
     workdir=$(dirname $(readlink -f $0))
     docker exec -i debuerreotype sh -euxc "debuerreotype-init --arch=$arch '/workdir/rootfs_$arch' '$debian_version' '@$epoch'"
     echo 'APT::Install-Suggests="true";'> $workdir/rootfs_$arch/etc/apt/apt.conf.d/90norecommends
@@ -41,6 +40,7 @@ install_packages() {
         apparmor
         bash-completion
         ca-certificates
+        cloud-init
         iptables
         iputils-ping
         logrotate
@@ -84,6 +84,33 @@ add_users() {
     echo '## allow password less for docker user' >> "$workdir/rootfs_$arch/etc/sudoers"
     echo 'docker ALL=(ALL) NOPASSWD: ALL' >> "$workdir/rootfs_$arch/etc/sudoers"
 
+    # preperation for https://docs.docker.com/engine/security/userns-remap/
+    docker exec -i debuerreotype sh -euxc "debuerreotype-chroot '/workdir/rootfs_$arch' addgroup --gid 1200 user-docker"
+    docker exec -i debuerreotype sh -euxc "debuerreotype-chroot '/workdir/rootfs_$arch' adduser --system -u 1200 --gid 1200 --disabled-login --no-create-home user-docker"
+    echo 'user-docker:100000:65536' > "$workdir/rootfs_$arch/etc/subuid"
+    echo 'user-docker:100000:65536' > "$workdir/rootfs_$arch/etc/subgid"
+
     # FixMe: We shouldn't hardcode password here
     docker exec -i debuerreotype sh -euxc "debuerreotype-chroot '/workdir/rootfs_$arch' sh -euxc 'echo \"rancher:rancher\" | chpasswd'"
+}
+
+install_busybox() {
+    arch=$1
+    workdir=$(dirname $(readlink -f $0))
+    docker exec -i debuerreotype sh -euxc "debuerreotype-chroot '/workdir/rootfs_$arch' /bin/busybox --install -s"
+    chmod +s "$workdir/rootfs_$arch/bin/ping"
+}
+
+minize_size() {
+    arch=$1
+    workdir=$(dirname $(readlink -f $0))
+    docker exec -i debuerreotype sh -euxc "debuerreotype-slimify '/workdir/rootfs_$arch'"
+    rm -rf "$workdir/rootfs_$arch/var/lib/apt/lists/*"
+}
+
+package_rootfs() {
+    arch=$1
+    workdir=$(dirname $(readlink -f $0))
+    mkdir -p "$workdir/output"
+    tar -I 'zstd --ultra -22' -cf "$workdir/outputrootfs_amd64.tar.zst" rootfs_$arch
 }
