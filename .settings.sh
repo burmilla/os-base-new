@@ -1,6 +1,12 @@
-arch=$(arch)
+#!/usr/bin/env bash
+
+# tools
+debuerreotype_version="0.12"
+
+arch="$(arch)"
 kernel_version="5.10.31-burmilla"
 debian_version="bullseye"
+debian_snapshot_timestamp="2021-04-24 08:39:43"
 docker_version="20.10.6"
 k3s_version="v1.20.6+k3s1"
 output_version="prototype"
@@ -21,4 +27,7 @@ if [ "$arch" == "aarch64" ]; then
   docker_arch="aarch64"
   kernel_arch="arm64"
 fi
+
+# export PATH="$PATH:$(pwd)/debuerreotype/scripts"
+
 
